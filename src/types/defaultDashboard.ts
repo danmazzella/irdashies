@@ -461,6 +461,9 @@ export const defaultDashboard: {
           numLaps: 3,
           decimalPlaces: 1,
         },
+        lapCount: {
+          enabled: false,
+        },
         pushToPass: { enabled: false },
         displayOrder: [
           'position',
@@ -479,6 +482,7 @@ export const defaultDashboard: {
           'lastTime',
           'compound',
           'lapTimeDeltas',
+          'lapCount',
           'pushToPass',
         ],
         driverTag: { enabled: false },

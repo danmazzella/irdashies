@@ -70,6 +70,11 @@ const sortableSettings: SortableSetting[] = [
     configKey: 'lapTimeDeltas',
     hasSubSetting: true,
   },
+  {
+    id: 'lapCount',
+    label: 'Lap Count',
+    configKey: 'lapCount',
+  },
   { id: 'pushToPass', label: 'Push to Pass', configKey: 'pushToPass' },
 ];
 
@@ -932,6 +937,22 @@ export const RelativeSettings = () => {
                           stylingOptions: {
                             ...settings.config.stylingOptions,
                             statusBadges: newValue,
+                          },
+                        })
+                      }
+                    />
+                    <SettingToggleRow
+                      title="Minimal Lap Count Badge"
+                      description="Remove the border from the lap count badge"
+                      enabled={
+                        settings.config.stylingOptions?.lapCount?.minimal ??
+                        false
+                      }
+                      onToggle={(newValue) =>
+                        handleConfigChange({
+                          stylingOptions: {
+                            ...settings.config.stylingOptions,
+                            lapCount: { minimal: newValue },
                           },
                         })
                       }

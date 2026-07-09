@@ -13,7 +13,9 @@ import {
   useP2PDisplayStates,
   usePitStopDuration,
   usePitLaneStore,
+  useFirstObservedLap,
 } from '@irdashies/context';
+import { computeStintLap } from './components/DriverInfoRow/cells/lapCountUtils';
 import {
   useRelativeSettings,
   useDriverRelatives,
@@ -51,7 +53,6 @@ export const Relative = () => {
 
   const p2pDisplayStates = useP2PDisplayStates();
 
-
   const lapTimeDeltasEnabled = settings?.lapTimeDeltas?.enabled ?? false;
   useLapTimesStoreUpdater(lapTimeDeltasEnabled);
   const numLapDeltas = settings?.lapTimeDeltas?.numLaps ?? 3;
@@ -63,6 +64,7 @@ export const Relative = () => {
   );
 
   const pitStopDurations = usePitStopDuration();
+  const firstObservedLaps = useFirstObservedLap();
   const pitExitPct = usePitLaneStore((s) => s.pitExitPct);
   const pitExitAfterSF = pitExitPct !== null && pitExitPct > 0.85;
 
@@ -197,6 +199,17 @@ export const Relative = () => {
         );
       }
 
+      // Stint lap = laps since last observed pit. Blank/unknown when we lack
+      // the data to compute it reliably, and hidden entirely for cars not out
+      // on track (see computeStintLap).
+      const stintLap = computeStintLap({
+        lastLap: result.lastLap,
+        lastPitLap: result.lastPitLap,
+        firstObservedLap: firstObservedLaps[result.carIdx],
+        pitExitAfterSF,
+        onTrack: result.onTrack,
+      });
+
       return (
         <DriverInfoRow
           key={result.carIdx}
@@ -265,6 +278,8 @@ export const Relative = () => {
           slowdown={result.slowdown}
           pitStopDuration={pitStopDurations[result.carIdx]}
           pitExitAfterSF={pitExitAfterSF}
+          currentLap={stintLap.lap}
+          lapCountUnknown={stintLap.unknown}
           deltaDecimalPlaces={settings?.delta?.precision}
           hideCarManufacturer={hideCarManufacturer}
           compactMode={generalSettings?.compactMode}
@@ -289,6 +304,7 @@ export const Relative = () => {
     numLapDeltas,
     lapDeltasByCarIdx,
     pitStopDurations,
+    firstObservedLaps,
     pitExitAfterSF,
   ]);
 
